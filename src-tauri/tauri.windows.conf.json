@@ -1,0 +1,20 @@
+{
+  "app": {
+    "windows": [
+      {
+        "title": "FruityHash",
+        "width": 800,
+        "height": 800,
+        "label": "main",
+        "minWidth": 520,
+        "minHeight": 560,
+        "center": true,
+        "visible": false,
+        "backgroundColor": "#b8e7fa",
+        "maximizable": false,
+        "decorations": false,
+        "shadow": true
+      }
+    ]
+  }
+}

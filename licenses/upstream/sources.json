@@ -1,0 +1,9 @@
+{
+  "alloc-stdlib@0.3.0": { "file": "alloc-stdlib.txt", "source": "https://raw.githubusercontent.com/dropbox/rust-alloc-no-stdlib/0a81fd6928ea3b33c8cd484aa4575d50ffb98012/LICENSE" },
+  "clipboard-win@5.4.3": { "file": "clipboard-win.txt", "source": "https://raw.githubusercontent.com/DoumanAsh/clipboard-win/ed27008ae5d1f10cfbb266de039f0fb35fd05a56/LICENSE" },
+  "selectors@0.38.0": { "file": "selectors.txt", "source": "https://www.mozilla.org/en-US/MPL/2.0/", "note": "Standard MPL 2.0 text, also shipped with cssparser 0.37.0; selectors lib.rs at revision 572ecba2d1600e7c3d490586692a209faf703baa explicitly references this license." },
+  "tauri-plugin@2.7.4": { "file": "tauri-plugin.txt", "source": "https://raw.githubusercontent.com/tauri-apps/tauri/9319e539f34237035cb4693bed9246660bc0a926/LICENSE-MIT" },
+  "webview2-com@0.39.1": { "file": "webview2-com.txt", "source": "https://raw.githubusercontent.com/wravery/webview2-rs/edc2caf886175ccaebe86078c9cfe1ae2a187328/LICENSE" },
+  "webview2-com-macros@0.8.1": { "file": "webview2-com-macros.txt", "source": "https://raw.githubusercontent.com/wravery/webview2-rs/dffa41a8a46d3f5565eefbff2de57d38d399f158/LICENSE" },
+  "webview2-com-sys@0.39.1": { "file": "webview2-com.txt", "source": "https://raw.githubusercontent.com/wravery/webview2-rs/edc2caf886175ccaebe86078c9cfe1ae2a187328/LICENSE" }
+}

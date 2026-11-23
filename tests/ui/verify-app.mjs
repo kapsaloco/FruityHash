@@ -1,0 +1,153 @@
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { chromium, expect } from '@playwright/test';
+const browser = await chromium.launch({ channel: process.env.FRUITY_BROWSER_CHANNEL || undefined });
+const page = await browser.newPage({ viewport: { width: 800, height: 740 } });
+const errors = [];
+page.on('pageerror', value => errors.push(value.message));
+const origin = process.env.FRUITY_APP_ORIGIN ?? 'http://127.0.0.1:1421';
+try {
+  await page.route('**/src/main.ts*', route => route.fulfill({contentType:'application/javascript',body:'import "/tests/ui/app-fixture.ts";'}));
+  await page.goto(origin);
+  await expect(page.getByRole('button',{name:'Calculate hashes',exact:true})).toBeDisabled();
+  await expect(page.locator('.fr-local-badge')).toHaveText('Local');
+  await expect(page.locator('#calculate-heading')).toHaveCount(0);
+  // Real mouse events must reach the native drag API, including over title text.
+  await page.locator('#window-drag span').click();
+  await expect.poll(()=>page.evaluate(()=>window.fixture.drags)).toBe(1);
+  await expect(page.locator('#maximize')).toHaveCount(0);
+  await page.locator('#minimize').click();
+  expect(await page.evaluate(()=>window.fixture.drags)).toBe(1);
+  await page.screenshot({path:join(tmpdir(),'fruity-app-idle.png'),fullPage:true});
+  await page.getByRole('button',{name:/Choose file/}).click();
+  await expect(page.locator('#filename')).toHaveText('Summer archive — photographs.zip');
+  await expect(page.locator('#expected-checksum')).toBeFocused();
+  await page.getByText('File details',{exact:true}).click();
+  await expect(page.locator('#filepath')).toContainText('/Example files/');
+  const all = page.getByRole('checkbox', {name:'All', exact:true});
+  for (const [algorithm, length] of [['md5',32],['sha1',40],['sha256',64],['sha512',128]]) {
+    await all.check();
+    await all.uncheck();
+    await page.locator('#expected-checksum').fill('z'.repeat(length));
+    await expect(page.locator('#algorithms input[value]:checked')).toHaveCount(0);
+    await page.locator('#expected-checksum').fill(`  ${'A'.repeat(length)}  `);
+    await expect(page.locator(`#algorithms input[value="${algorithm}"]`)).toBeChecked();
+    await expect(page.locator('#algorithms input[value]:checked')).toHaveCount(1);
+    await expect(page.locator('#calculate')).toHaveText('Calculate and compare');
+  }
+  await page.locator('#expected-checksum').fill('');
+  await expect(page.locator('#calculate')).toHaveText('Calculate hashes');
+  await all.check();
+  await expect(page.locator('#algorithms input[value]:checked')).toHaveCount(4);
+  await page.getByRole('checkbox', {name:'MD5 Legacy', exact:true}).uncheck();
+  expect(await all.evaluate(input => input.indeterminate)).toBe(true);
+  await all.check();
+  await all.uncheck();
+  await expect(page.locator('#algorithms input[value]:checked')).toHaveCount(0);
+  await expect(page.locator('#calculate')).toBeDisabled();
+  await page.getByRole('checkbox',{name:'SHA-256',exact:true}).check();
+  await page.locator('#expected-checksum').fill('ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad');
+  expect(await page.locator('#expected-checksum').evaluate(input => Boolean(input.compareDocumentPosition(document.getElementById('calculate')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
+  expect(await page.locator('#calculate').evaluate(button => Boolean(button.compareDocumentPosition(document.getElementById('results-list')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
+  expect(await page.locator('#results-list').evaluate(list => Boolean(list.compareDocumentPosition(document.getElementById('comparison')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
+  await page.getByRole('checkbox',{name:'SHA-512',exact:true}).check();
+  await page.locator('#calculate').click();
+  await expect(page.locator('#calculate')).toHaveText('Cancel');
+  await expect(page.locator('#change-file')).toBeDisabled();
+  // Cancel while the invoke is pending: defer until an event reveals the ID.
+  await page.locator('#calculate').click();
+  expect(await page.evaluate(()=>window.fixture.canceled)).toEqual([]);
+  await page.evaluate(()=>window.fixture.send('started',{totalBytes:window.fixture.size}));
+  await expect.poll(()=>page.evaluate(()=>window.fixture.canceled)).toEqual(['job-1']);
+  await page.evaluate(()=>{window.fixture.cancelComplete();window.fixture.resolve();});
+  await expect(page.locator('#operation-title')).toHaveText('Calculation canceled.');
+  await expect(page.locator('#results-list')).toBeHidden();
+  // Full success delivered before start's command reply.
+  await page.evaluate(()=>window.fixture.fast=true);
+  await page.locator('#calculate').click();
+  await expect(page.locator('#app')).toHaveAttribute('data-state','succeeded');
+  await expect(page.locator('#comparison')).toHaveAttribute('data-state','match');
+  await page.locator('#comparison').scrollIntoViewIfNeeded();
+  await page.screenshot({path:join(tmpdir(),'fruity-app-match.png'),fullPage:true});
+  await expect(page.locator('[data-algorithm="sha512"] code')).toHaveText(/^[a-f0-9]{128}$/);
+  await page.getByRole('button',{name:'Copy SHA-512',exact:true}).click();
+  await expect.poll(()=>page.evaluate(()=>window.fixture.copied)).toEqual(['sha512']);
+  await page.locator('#copy-all').click();
+  await expect.poll(()=>page.evaluate(()=>window.fixture.copied)).toEqual(['sha512','all']);
+  // Canceling the picker preserves completed results.
+  await page.evaluate(()=>window.fixture.cancelPicker=true);
+  await page.locator('#change-file').click();
+  await expect(page.locator('[data-algorithm="sha512"] code')).toHaveText(/^[a-f0-9]{128}$/);
+  const sha = 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad';
+  await page.locator('#expected-checksum').fill(sha.toUpperCase());
+  await page.locator('#expected-checksum').blur();
+  await expect(page.locator('#comparison')).toHaveAttribute('data-state','match');
+  await page.locator('#expected-checksum').fill('0'.repeat(64));
+  await page.locator('#expected-checksum').blur();
+  await expect(page.locator('#comparison')).toHaveAttribute('data-state','mismatch');
+  await page.locator('#comparison').scrollIntoViewIfNeeded();
+  await page.screenshot({path:join(tmpdir(),'fruity-app-mismatch.png'),fullPage:true});
+  await page.locator('#expected-checksum').fill('invalid');
+  await page.locator('#expected-checksum').blur();
+  await expect(page.locator('#expected-checksum')).toHaveAttribute('aria-invalid','true');
+  await page.locator('#expected-checksum').fill('a'.repeat(32));
+  await page.locator('#expected-checksum').blur();
+  await expect(page.locator('#comparison-message')).toContainText('MD5 was not calculated');
+  // An older successful comparison must never overwrite a newer input.
+  await page.evaluate(()=>window.fixture.compareDelay=400);
+  await page.locator('#expected-checksum').fill(sha);
+  await page.locator('#expected-checksum').blur();
+  await page.locator('#expected-checksum').fill('0'.repeat(64));
+  await expect(page.locator('#comparison')).toHaveAttribute('data-state','mismatch');
+  await page.evaluate(()=>window.fixture.compareDelay=0);
+  await page.locator('#expected-checksum').fill(sha);
+  await page.locator('#expected-checksum').blur();
+  await expect(page.locator('#comparison')).toHaveAttribute('data-state','match');
+  await page.screenshot({path:join(tmpdir(),'fruity-app-success.png'),fullPage:true});
+  // Backend failure clears partial results; retry can complete normally.
+  await page.evaluate(()=>window.fixture.fast=false);
+  await page.locator('#calculate').click();
+  await page.evaluate(()=>{window.fixture.send('started',{totalBytes:window.fixture.size});window.fixture.resolve();window.fixture.progress(window.fixture.size);});
+  await expect(page.locator('#hash-progress')).toHaveAttribute('aria-valuenow','99');
+  await page.evaluate(()=>window.fixture.fail());
+  await expect(page.locator('#results-list')).toBeHidden();
+  await expect(page.locator('#app-error')).toContainText('file changed');
+  await page.evaluate(()=>window.fixture.fast=true);
+  await page.locator('#calculate').click();
+  await expect(page.locator('#app-error')).toBeHidden();
+  await expect(page.locator('#app')).toHaveAttribute('data-state','succeeded');
+  // Long untrusted names are text, and all controls/results remain reachable.
+  await page.evaluate(()=>{window.fixture.name='<img src=x onerror=alert(1)> — '.repeat(6);window.fixture.cancelPicker=false;});
+  await page.locator('#change-file').click();
+  await expect(page.locator('#results-list')).toBeHidden();
+  expect(await page.locator('#filename img').count()).toBe(0);
+  await page.locator('#calculate').click();
+  await expect(page.locator('#app')).toHaveAttribute('data-state','succeeded');
+  for(const width of [800,520,320]) {
+    await page.setViewportSize({width,height:740});
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+    expect(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight)).toBe(true);
+    expect(await page.locator('.fh-scroll').evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
+    const digest=page.locator('[data-algorithm="sha512"] code');
+    expect(await digest.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
+  }
+  await page.screenshot({path:join(tmpdir(),'fruity-app-narrow.png'),fullPage:true});
+  await page.setViewportSize({width:800,height:740});
+  await page.getByRole('button',{name:'Help and about FruityHash'}).click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.screenshot({path:join(tmpdir(),'fruity-app-about.png'),fullPage:true});
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#help')).toBeFocused();
+  // Close confirmation + canceling phase + force-close fallback.
+  await page.evaluate(()=>window.fixture.fast=false);
+  await page.locator('#calculate').click();
+  await page.evaluate(()=>{window.fixture.send('started',{totalBytes:window.fixture.size});window.fixture.resolve();window.fixture.progress();window.fixture.close();});
+  await expect(page.locator('#close-dialog')).toBeVisible();
+  await expect(page.locator('#keep-calculating')).toBeFocused();
+  await page.locator('#stop-close').click();
+  await expect(page.locator('#force-close')).toBeVisible({timeout:4000});
+  await page.evaluate(()=>window.fixture.cancelComplete());
+  await expect.poll(()=>page.evaluate(()=>window.fixture.exits.length)).toBeGreaterThan(0);
+  expect(errors).toEqual([]);
+  console.log('Passed: selection, pre-reply cancellation/completion, results, copy, picker cancellation, stale comparison, invalid input, long names, 3 widths, Help and active-job close.');
+} finally {await browser.close();}

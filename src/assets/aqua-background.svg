@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1000" viewBox="0 0 1400 1000" fill="none">
+<defs>
+  <linearGradient id="sky" x1="150" y1="0" x2="1260" y2="1000" gradientUnits="userSpaceOnUse"><stop stop-color="#c8f8ff"/><stop offset=".3" stop-color="#3cc9f0"/><stop offset=".7" stop-color="#0a92d6"/><stop offset="1" stop-color="#075ba8"/></linearGradient>
+  <radialGradient id="light"><stop stop-color="#fff" stop-opacity=".95"/><stop offset=".45" stop-color="#b5faff" stop-opacity=".4"/><stop offset="1" stop-color="#b5faff" stop-opacity="0"/></radialGradient>
+  <radialGradient id="green"><stop stop-color="#c5ff62" stop-opacity=".8"/><stop offset=".6" stop-color="#a8ff73" stop-opacity=".35"/><stop offset="1" stop-color="#6dffb9" stop-opacity="0"/></radialGradient>
+  <linearGradient id="ribbon" x1="0" y1="700" x2="1400" y2="100" gradientUnits="userSpaceOnUse"><stop stop-color="#e3ff8a" stop-opacity=".7"/><stop offset=".55" stop-color="#8dfbd1" stop-opacity=".12"/><stop offset="1" stop-color="#ecffff" stop-opacity=".65"/></linearGradient>
+  <radialGradient id="glass" cx=".3" cy=".22" r=".85"><stop stop-color="#fff" stop-opacity=".45"/><stop offset=".35" stop-color="#b5faff" stop-opacity=".04"/><stop offset=".75" stop-color="#006ca7" stop-opacity=".08"/><stop offset=".94" stop-color="#edffff" stop-opacity=".7"/><stop offset="1" stop-color="#006295" stop-opacity=".2"/></radialGradient>
+  <linearGradient id="edge" x2=".7" y2="1"><stop stop-color="#fff" stop-opacity=".9"/><stop offset=".5" stop-color="#b5faff" stop-opacity=".1"/><stop offset="1" stop-color="#e3ffff" stop-opacity=".65"/></linearGradient>
+  <g id="bubble"><circle r="60" fill="url(#glass)" stroke="url(#edge)" stroke-width="1.5"/><path d="M-42-20C-31-47 3-52 25-40" stroke="#fff" stroke-opacity=".75" stroke-width="4" stroke-linecap="round"/><path d="M-34 39C-9 54 22 47 37 27" stroke="#b1faff" stroke-opacity=".55" stroke-width="2" stroke-linecap="round"/></g>
+</defs>
+<path fill="url(#sky)" d="M0 0h1400v1000H0z"/>
+<ellipse cx="140" cy="70" rx="800" ry="650" fill="url(#light)"/>
+<ellipse cx="1350" cy="100" rx="420" ry="520" fill="url(#green)"/>
+<ellipse cx="40" cy="870" rx="380" ry="460" fill="url(#green)"/>
+<path d="M-260 920C120 170 800 1170 1510-160" stroke="url(#ribbon)" stroke-width="150"/>
+<path d="M-220 903C150 178 810 1130 1510-180" stroke="#edffff" stroke-opacity=".43" stroke-width="2"/>
+<path d="M-270 1000C130 340 750 1260 1530 120" stroke="#d1ffff" stroke-opacity=".23" stroke-width="26"/>
+<path d="M-180 1020C170 410 820 1220 1530 130" stroke="#fff" stroke-opacity=".35" stroke-width="1.5"/>
+<path d="M-180 180C380 620 940-420 1550 370" stroke="#fff" stroke-opacity=".13" stroke-width="70"/>
+<use href="#bubble" transform="translate(1290 220) scale(1.8)"/>
+<use href="#bubble" transform="translate(90 710) scale(1.25)"/>
+<use href="#bubble" transform="translate(1190 890) scale(.75)"/>
+<use href="#bubble" transform="translate(380 980) scale(.45)"/>
+<use href="#bubble" transform="translate(1010 70) scale(.4)"/>
+</svg>

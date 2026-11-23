@@ -1,0 +1,104 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/
+.idea/
+.vs/
+*.code-workspace
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local environment and credentials (keep sanitized examples versioned)
+.env
+.env.*
+!.env.example
+!.env.*.example
+.aws/
+.ssh/
+.azure/
+.gcloud/
+.agents/
+.codex/
+.npmrc
+.netrc
+.git-credentials
+.pypirc
+credentials.json
+service-account*.json
+*.credentials.json
+
+# Private signing material
+*.key
+*.pem
+*.p8
+*.p12
+*.pfx
+*.mobileprovision
+*.keystore
+*.jks
+*.p7b
+*.p7c
+
+# Build, bundler and test caches/artifacts
+/target/
+.vite/
+.cache/
+coverage/
+.vitest/
+test-results/
+playwright-report/
+playwright/.cache/
+*.tsbuildinfo
+*.dmp
+*.crash
+
+# Local Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Generated release packages belong in Releases, not the source tree
+/artifacts/
+/release/
+/releases/
+/*.exe
+/*.msi
+/*.msix
+/*.msixbundle
+/*.zip
+/*.dmg
+
+# Local backups and temporary files
+*.bak
+*.tmp
+*.temp
+
+# macOS and Windows local metadata
+.AppleDouble
+.LSOverride
+Thumbs.db
+Desktop.ini
+._*
+
+# Internal planning, implementation notes, and original design sources
+/.internal/

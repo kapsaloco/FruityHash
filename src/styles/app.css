@@ -1,0 +1,26 @@
+/* FruityHash composition and application-specific layout. */
+html, body { height: 100%; }
+.fh-shell { height: 100dvh; display: grid; grid-template-rows: auto minmax(0, 1fr); }
+.fh-shell > .fr-titlebar { grid-row: 1; }
+.fh-scroll { grid-row: 2; overflow-y: auto; scrollbar-color: #399fce #c0ebfc; scrollbar-width: thin; }
+.fh-main { position: relative; display: grid; gap: 12px; max-width: 960px; margin-inline: auto; padding: 14px 20px 10px; }
+.fh-trust-note { font-size: 12px; line-height: 1.5; color: #456b7c; }
+@media (max-width: 650px) {
+.fh-main { padding: 14px 16px 12px; }
+}
+@media (max-width: 440px) {
+.fh-main { padding: 12px 10px; gap: 10px; }
+}
+@media (forced-colors: active) {
+.fh-trust-note { color: CanvasText; }
+}
+.fh-shell {
+  background: #38b9e9 url('../assets/aqua-background.svg') center / cover no-repeat;
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+.fh-shell { background: #b8e7fa; }
+}
+@media (forced-colors: active) {
+.fh-shell { background: Canvas; color: CanvasText; border-color: CanvasText; box-shadow: none; }
+}
+.fh-calculate-area { padding: 2px 3px; }

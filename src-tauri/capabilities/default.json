@@ -1,0 +1,18 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Main window events and caption controls; file and clipboard operations are Rust commands.",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:event:default",
+    "core:window:default",
+    "core:window:allow-minimize",
+    "core:window:allow-show",
+    "core:window:allow-set-size",
+    "core:window:allow-center",
+    "core:window:allow-close",
+    "core:window:allow-start-dragging"
+  ]
+}

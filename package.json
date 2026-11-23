@@ -1,0 +1,33 @@
+{
+  "name": "fruityhash",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:ui": "node tests/ui/verify-app.mjs",
+    "licenses:generate": "node scripts/generate-licenses.mjs",
+    "licenses:check": "node scripts/generate-licenses.mjs --check"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "@tauri-apps/cli": "^2",
+    "typescript": "~6.0.3",
+    "vite": "^8.0.16",
+    "vitest": "^5.1.1"
+  },
+  "license": "MIT",
+  "author": "George Kapsalakos",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kapsaloco/FruityHash.git"
+  }
+}
